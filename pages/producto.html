@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -374,10 +373,10 @@ ul { list-style: none; }
 </div>
  
 <nav class="navbar">
-  <a class="nav-logo" href="index.html">Data<span>Storm</span></a>
+  <a class="nav-logo" href="../index.html">Data<span>Storm</span></a>
  
   <div class="nav-center">
-    <a href="index.html">Inicio</a>
+    <a href="../index.html">Inicio</a>
     <a href="catalogo.html" class="active">Catálogo</a>
     <a href="catalogo.html?cat=pc">PCs Gamer</a>
     <a href="catalogo.html?cat=componentes">Componentes</a>
@@ -731,109 +730,123 @@ if(marqueeTrack){
 // PÁGINA DE PRODUCTO
 let qtyActual = 1;
 let productoActual = null;
- 
+
 const params = new URLSearchParams(location.search);
 const id = parseInt(params.get('id'));
- 
-if(!id){
-  document.querySelector('.product-page').innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-dim)">Producto no encontrado</div>';
-} else {
+
+if(id) {
   productoActual = getProducto(id);
-  if(!productoActual){
-    document.querySelector('.product-page').innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-dim)">Producto no encontrado</div>';
-  } else {
-    cargarProducto();
-  }
-}
- 
-function cargarProducto(){
-  const p = productoActual;
   
-  document.getElementById('breadcrumb-name').textContent = p.nombre;
-  document.getElementById('product-name').textContent = p.nombre;
-  
-  const iconEl = document.getElementById('product-icon');
-  iconEl.innerHTML = '';
-  const img = document.createElement('img');
-  img.src = getImagePath(p.image);
-  img.alt = p.nombre;
-  img.onerror = function(){ this.style.display = 'none'; iconEl.textContent = '📦'; };
-  iconEl.appendChild(img);
-  
-  document.getElementById('product-price').textContent = `$${p.precio.toLocaleString('es-MX')}`;
-  
-  if(p.badge){
-    const badge = document.getElementById('product-badge');
-    badge.textContent = p.badge;
-    badge.classList.add('show');
-  }
- 
-  if(p.descripcion){
-    document.getElementById('benefits-list').innerHTML = `<div class="benefit-row"><strong>Descripción:</strong> ${p.descripcion}</div>`;
-  }
- 
-  if(p.cat === 'pc'){
-    document.getElementById('options-section').innerHTML = `
-      <div class="option-group">
-        <div class="option-title">RAM</div>
-        <div class="option-buttons">
-          <button class="option-btn selected" onclick="selectOption(this, 'ram')">16GB</button>
-          <button class="option-btn" onclick="selectOption(this, 'ram')">32GB</button>
-        </div>
-      </div>
-      <div class="option-group" style="margin-top: 1.5rem;">
-        <div class="option-title">ALMACENAMIENTO M.2</div>
-        <div class="option-buttons">
-          <button class="option-btn selected" onclick="selectOption(this, 'storage')">500GB</button>
-          <button class="option-btn" onclick="selectOption(this, 'storage')">1TB</button>
-          <button class="option-btn" onclick="selectOption(this, 'storage')">2TB</button>
-        </div>
-      </div>
-    `;
-  } else {
-    document.getElementById('options-section').style.display = 'none';
-  }
- 
-  if(p.componentes){
-    const specsSection = document.getElementById('specs-section');
-    specsSection.style.display = 'block';
- 
-    const accordion = document.getElementById('components-accordion');
-    accordion.innerHTML = p.componentes.map((comp, i) => `
-      <div class="accordion-item">
-        <div class="accordion-header" onclick="toggleAccordion(this)">
-          <div class="accordion-title">
-            <span class="accordion-icon">▼</span>
-            ${comp}
+  if(productoActual) {
+    const p = productoActual;
+    
+    // Breadcrumb
+    document.getElementById('breadcrumb-name').textContent = p.nombre;
+    
+    // Nombre
+    document.getElementById('product-name').textContent = p.nombre;
+    
+    // Imagen
+    // Imagen principal
+const iconEl = document.getElementById('product-icon');
+const img = document.createElement('img');
+
+ img.src = `../assets/image/${p.image}`;
+
+img.alt = p.nombre;
+img.style.width = '150%';
+img.style.height = '150%';
+img.style.objectFit = 'contain';
+
+img.onerror = function() {
+  this.style.display = 'none';
+  iconEl.textContent = '📦';
+};
+
+iconEl.innerHTML = '';
+iconEl.appendChild(img);
+    
+    // Precio
+    document.getElementById('product-price').textContent = `$${p.precio.toLocaleString('es-MX')}`;
+    
+    // Badge
+    if(p.badge) {
+      document.getElementById('product-badge').textContent = p.badge;
+      document.getElementById('product-badge').style.display = 'block';
+    }
+    
+    // Descripción
+    if(p.descripcion) {
+      document.getElementById('benefits-list').innerHTML = `<p>${p.descripcion}</p>`;
+    }
+    
+    // Opciones para PCs
+    if(p.cat === 'pc') {
+      document.getElementById('options-section').innerHTML = `
+        <div class="option-group">
+          <div class="option-title">RAM</div>
+          <div class="option-buttons">
+            <button class="option-btn selected" onclick="selectOption(this, 'ram')">16GB</button>
+            <button class="option-btn" onclick="selectOption(this, 'ram')">32GB</button>
           </div>
         </div>
-        <div class="accordion-content">
-          <div class="accordion-body">
-            Especificaciones técnicas del componente ${i + 1}
+        <div class="option-group" style="margin-top: 1.5rem;">
+          <div class="option-title">ALMACENAMIENTO M.2</div>
+          <div class="option-buttons">
+            <button class="option-btn selected" onclick="selectOption(this, 'storage')">500GB</button>
+            <button class="option-btn" onclick="selectOption(this, 'storage')">1TB</button>
+            <button class="option-btn" onclick="selectOption(this, 'storage')">2TB</button>
           </div>
         </div>
-      </div>
-    `).join('');
- 
-    if(p.fps){
-      const fpsContainer = document.getElementById('fps-container');
-      fpsContainer.innerHTML = p.fps.map(f => `
-        <div class="fps-card">
-          <div class="fps-game">${f.juego}</div>
-          <div class="fps-number">${f.fps}</div>
+      `;
+    }
+    
+    // Componentes para PCs
+    if(p.componentes && p.cat === 'pc') {
+      document.getElementById('specs-section').style.display = 'block';
+      
+      const accordion = document.getElementById('components-accordion');
+      accordion.innerHTML = p.componentes.map((comp, i) => `
+        <div class="accordion-item">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="accordion-title">
+              <span class="accordion-icon">▼</span>
+              ${comp}
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-body">${comp}</div>
+          </div>
         </div>
       `).join('');
+      
+      // FPS
+      if(p.fps) {
+        const fpsContainer = document.getElementById('fps-container');
+        fpsContainer.innerHTML = p.fps.map(f => `
+          <div class="fps-card">
+            <div class="fps-game">${f.juego}</div>
+            <div class="fps-number">${f.fps}</div>
+          </div>
+        `).join('');
+      }
     }
-  }
- 
-  const recomendados = PRODUCTOS.filter(prod => prod.cat === p.cat && prod.id !== p.id).slice(0, 3);
-  
-  if(recomendados.length){
+    
+    // Productos relacionados
+    let relacionados;
+    if(p.cat === 'pc') {
+      relacionados = PRODUCTOS.filter(prod => prod.cat !== 'pc' && prod.id !== p.id).slice(0, 4);
+    } else {
+      relacionados = PRODUCTOS.filter(prod => prod.cat !== p.cat && prod.id !== p.id).slice(0, 4);
+    }
+    
     const grid = document.getElementById('recommended-grid');
-    grid.innerHTML = recomendados.map(rec => `
+    grid.innerHTML = relacionados.map(rec => `
       <div class="product-card" onclick="location.href='producto.html?id=${rec.id}'">
+
         <div class="product-img">
-          <img src="${getImagePath(rec.image)}" alt="${rec.nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML += '<div style=\'font-size:3rem;\'>📦</div>'">
+          <img src="../assets/image/${rec.image}"
+          
         </div>
         <div class="product-body">
           <div class="product-cat">${rec.cat}</div>
@@ -844,31 +857,32 @@ function cargarProducto(){
     `).join('');
   }
 }
- 
-function selectOption(btn, type){
+
+function selectOption(btn, type) {
   btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 }
- 
-function toggleAccordion(header){
+
+function toggleAccordion(header) {
   const item = header.parentElement;
   item.classList.toggle('open');
 }
- 
-function cambiarQty(delta){
+
+function cambiarQty(delta) {
   qtyActual = Math.max(1, qtyActual + delta);
   document.getElementById('qty-input').value = qtyActual;
 }
- 
-function agregarACarritoActual(){
-  for(let i = 0; i < qtyActual; i++){
+
+function agregarACarritoActual() {
+  if(!productoActual) return;
+  for(let i = 0; i < qtyActual; i++) {
     agregarCarrito(productoActual.id);
   }
   toast(`✅ ${productoActual.nombre.split('/')[0].trim()} agregado al carrito`);
   qtyActual = 1;
   document.getElementById('qty-input').value = 1;
 }
- 
+
 updateBadge();
 </script>
 <script src="../assets/js/particulas.js"></script>
