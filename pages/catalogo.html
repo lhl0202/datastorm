@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo — DataStorm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/estilo.css">
+<style>
+.catalog-page { position: relative; z-index: 1; padding: 3rem clamp(1.2rem,5vw,4rem); min-height: calc(100vh - 92px); }
+.catalog-header { margin-bottom: 3rem; text-align: center; }
+.catalog-header h1 { font-family: var(--font-head); font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; }
+.catalog-header h1 span { color: var(--neon); }
+.catalog-header p { color: var(--text-dim); font-size: 0.95rem; }
+.filters-section { display: flex; gap: 1.5rem; margin-bottom: 3rem; flex-wrap: wrap; align-items: center; }
+.filter-group { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.filter-btn { padding: 0.6rem 1.2rem; border-radius: 8px; border: 1.5px solid var(--border); background: none; color: var(--text-dim); font-family: var(--font-body); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; text-transform: capitalize; letter-spacing: 0.04em; }
+.filter-btn:hover { border-color: var(--neon); color: var(--neon); }
+.filter-btn.active { background: var(--neon); color: #000; border-color: var(--neon); box-shadow: 0 0 20px var(--neon-glow); }
+.sort-select { padding: 0.6rem 1rem; border-radius: 8px; border: 1.5px solid var(--border); background: var(--bg3); color: var(--text); font-family: var(--font-body); font-size: 0.85rem; cursor: pointer; transition: border-color 0.2s; }
+.sort-select:hover, .sort-select:focus { border-color: var(--neon); outline: none; }
+.results-info { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 1.5rem; text-align: center; }
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
+.product-card { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all 0.3s; cursor: pointer; }
+.product-card:hover { border-color: var(--neon); box-shadow: 0 0 24px var(--neon-glow); transform: translateY(-4px); }
+.product-img { width: 100%; aspect-ratio: 1; background: var(--bg3); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.product-img img { width: 100%; height: 100%; object-fit: contain; padding: 1rem; transition: transform 0.3s; }
+.product-card:hover .product-img img { transform: scale(1.05); }
+.product-badge { position: absolute; top: 12px; right: 12px; background: var(--red); color: #fff; padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; z-index: 5; }
+.product-body { padding: 1.2rem; }
+.product-cat { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; }
+.product-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.6rem; line-height: 1.3; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.product-specs { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.product-footer { display: flex; justify-content: space-between; align-items: center; }
+.product-price { font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; color: var(--neon); }
+.product-add-btn { background: var(--neon); color: #000; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+.product-add-btn:hover { opacity: 0.85; }
+.empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-dim); }
+.empty-state-icon { font-size: 4rem; margin-bottom: 1rem; }
+.footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 3rem clamp(1.2rem,5vw,4rem) 0; background: rgba(0,0,0,.4); }
+.footer-grid { display: grid; grid-template-columns: 2fr repeat(3,1fr); gap: 2.5rem; padding-bottom: 2.5rem; }
+.footer-brand .logo { font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; margin-bottom: 0.75rem; color: var(--text); }
+.footer-brand .logo span { color: var(--neon); }
+.footer-brand p { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+.footer-col h4 { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; color: var(--neon); margin-bottom: 0.9rem; }
+.footer-col li { margin-bottom: 0.45rem; }
+.footer-col a { font-size: 0.82rem; color: var(--text-dim); transition: color 0.2s; cursor: pointer; }
+.footer-col a:hover { color: var(--text); }
+.footer-bar { border-top: 1px solid var(--border); text-align: center; padding: 1rem; font-size: 0.72rem; color: var(--text-dim); }
+@media (max-width: 900px) { .products-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); } }
+@media (max-width: 600px) { .nav-center { display: none; } .filters-section { flex-direction: column; align-items: stretch; } .filter-btn { flex: 1; } .products-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; } .footer-grid { grid-template-columns: 1fr; gap: 2rem; } }
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="top-bar"><div class="marquee-track" id="marquee-track"></div></div>
+<nav class="navbar">
+  <a class="nav-logo" href="../index.html">Data<span>Storm</span></a>
+  <div class="nav-center">
+    <a href="../index.html">Inicio</a>
+    <a href="catalogo.html" class="active">Catálogo</a>
+    <a href="catalogo.html?cat=pc">PCs Gamer</a>
+    <a href="catalogo.html?cat=componentes">Componentes</a>
+    <a href="catalogo.html?cat=perifericos">Periféricos</a>
+  </div>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <button class="search-btn" id="search-btn" onclick="toggleSearch()">🔍</button>
+      <div class="search-box" id="search-box">
+        <div class="search-input-wrap"><span>🔍</span><input type="text" id="search-input" placeholder="Buscar productos…" oninput="buscar(this.value)" autocomplete="off"></div>
+        <div class="search-results" id="search-results"><div class="search-empty">Escribe para buscar…</div></div>
+      </div>
+    </div>
+    <div class="auth-nav-item">
+      <button class="auth-trigger" id="auth-trigger" onclick="toggleAuthMenu(event)">👤 <span id="auth-label">Mi cuenta</span> ▾</button>
+      <div class="auth-dropdown" id="auth-dropdown"></div>
+    </div>
+    <button class="cart-btn" onclick="location.href='carrito.html'">🛒<span class="cart-badge" id="cart-count">0</span></button>
+  </div>
+</nav>
+<main class="catalog-page">
+  <div class="catalog-header">
+    <h1>Nuestro <span>Catálogo</span></h1>
+    <p>Explora nuestra selección de PCs gamer, componentes y periféricos de última generación</p>
+  </div>
+  <div class="filters-section">
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="filtrarCategoria(this, 'todos')">Todos</button>
+      <button class="filter-btn" onclick="filtrarCategoria(this, 'pc')">PCs Gamer</button>
+      <button class="filter-btn" onclick="filtrarCategoria(this, 'componentes')">Componentes</button>
+      <button class="filter-btn" onclick="filtrarCategoria(this, 'perifericos')">Periféricos</button>
+    </div>
+    <select class="sort-select" onchange="cambiarOrden(this.value)">
+      <option value="default">Ordenar por</option>
+      <option value="precio-asc">Menor precio</option>
+      <option value="precio-desc">Mayor precio</option>
+      <option value="nombre">Nombre A-Z</option>
+    </select>
+  </div>
+  <div class="results-info" id="results-info"></div>
+  <div class="products-grid" id="products-grid"></div>
+  <div id="empty-state" style="display:none;">
+    <div class="empty-state">
+      <div class="empty-state-icon">📭</div>
+      <h3>No hay productos</h3>
+      <p>No encontramos productos que coincidan con tu búsqueda</p>
+    </div>
+  </div>
+</main>
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="logo">Data<span>Storm</span></div><p>Tienda de computadoras en línea. PCs armadas, componentes y periféricos con envío a toda la república mexicana.</p></div>
+    <div class="footer-col"><h4>TIENDA</h4><ul><li><a href="catalogo.html">Catálogo</a></li><li><a href="catalogo.html?cat=pc">PCs Gamer</a></li><li><a href="catalogo.html?cat=componentes">Componentes</a></li><li><a href="catalogo.html?cat=perifericos">Periféricos</a></li></ul></div>
+    <div class="footer-col"><h4>AYUDA</h4><ul><li><a href="#">Garantía</a></li><li><a href="#">Devoluciones</a></li><li><a href="#">Contacto</a></li></ul></div>
+    <div class="footer-col"><h4>CONTACTO</h4><ul><li><a href="mailto:ventas@datastorm.mx">📧 ventas@datastorm.mx</a></li><li><a href="tel:+523301234">📞 312 · 5673 · 7600</a></li><li><a href="#">📍 Villa de Álvarez, Colima</a></li></ul></div>
+  </div>
+  <div class="footer-bar">© 2026 DataStorm — Jorge Morales Chávez · Gibran Mesina Mejía</div>
+</footer>
+<div id="toast"></div>
+<div class="auth-modal-overlay" id="auth-modal">
+  <div class="auth-modal-box">
+    <button class="auth-modal-close" onclick="cerrarModal()">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" id="tab-registro" onclick="switchTab('registro')">Crear cuenta</button>
+      <div class="auth-tab-bar" id="tab-bar"></div>
+    </div>
+    <div id="panel-login">
+      <div class="form-group"><label>CORREO ELECTRÓNICO</label><input type="email" id="l-correo" placeholder="tu@correo.com" onkeypress="if(event.key==='Enter')loginSubmit()"></div>
+      <div class="form-group"><label>CONTRASEÑA</label><input type="password" id="l-pass" placeholder="••••••••" onkeypress="if(event.key==='Enter')loginSubmit()"></div>
+      <button class="btn-submit" onclick="loginSubmit()">Iniciar sesión</button>
+      <p class="auth-switch">¿No tienes cuenta? <a onclick="switchTab('registro')">Regístrate</a></p>
+    </div>
+    <div id="panel-registro" style="display:none">
+      <div class="form-group"><label>NOMBRE COMPLETO</label><input type="text" id="r-nombre" placeholder="Jorge Morales Chávez"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="form-group"><label>TELÉFONO</label><input type="tel" id="r-tel" placeholder="33-1234-5678"></div>
+        <div class="form-group"><label>CORREO</label><input type="email" id="r-correo" placeholder="tu@correo.com"></div>
+      </div>
+      <div class="form-group"><label>DOMICILIO</label><input type="text" id="r-dom" placeholder="Calle, número, ciudad"></div>
+      <div class="form-group"><label>CONTRASEÑA</label><input type="password" id="r-pass" placeholder="Mínimo 6 caracteres"></div>
+      <button class="btn-submit" onclick="registroSubmit()">Crear mi cuenta</button>
+      <p class="auth-switch">¿Ya tienes cuenta? <a onclick="switchTab('login')">Inicia sesión</a></p>
+    </div>
+  </div>
+</div>
+<script src="../assets/js/productos.js"></script>
+<script src="../assets/js/carrito.js"></script>
+<script src="../assets/js/funciones.js"></script>
+<script src="../assets/js/busqueda.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script>
+let categoriaActual = 'todos';
+let ordenActual = 'default';
+ 
+function filtrarCategoria(btn, cat){
+  categoriaActual = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProductos();
+}
+ 
+function cambiarOrden(orden){
+  ordenActual = orden;
+  renderProductos();
+}
+ 
+function renderProductos(){
+  let productos = PRODUCTOS;
+  if(categoriaActual !== 'todos'){
+    productos = productos.filter(p => p.cat === categoriaActual);
+  }
+  if(ordenActual === 'precio-asc'){
+    productos = [...productos].sort((a, b) => a.precio - b.precio);
+  } else if(ordenActual === 'precio-desc'){
+    productos = [...productos].sort((a, b) => b.precio - a.precio);
+  } else if(ordenActual === 'nombre'){
+    productos = [...productos].sort((a, b) => a.nombre.localeCompare(b.nombre));
+  }
+  const grid = document.getElementById('products-grid');
+  const empty = document.getElementById('empty-state');
+  const info = document.getElementById('results-info');
+  if(!productos.length){
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    info.textContent = '';
+    return;
+  }
+  empty.style.display = 'none';
+  info.textContent = `Mostrando ${productos.length} producto${productos.length !== 1 ? 's' : ''}`;
+  grid.innerHTML = productos.map(p => `
+    <div class="product-card" onclick="location.href='producto.html?id=${p.id}'">
+      ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+      <div class="product-img">
+        <img src="${getImagePath(p.image)}" alt="${p.nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML += '<div style=\\'font-size:2rem;\\'>📦</div>'">
+      </div>
+      <div class="product-body">
+        <div class="product-cat">${p.cat}</div>
+        <div class="product-name">${p.nombre}</div>
+        <div class="product-specs">${p.specs}</div>
+        <div class="product-footer">
+          <div class="product-price">$${p.precio.toLocaleString('es-MX')}</div>
+          <button class="product-add-btn" onclick="event.stopPropagation(); agregarCarrito(${p.id})">+ CARRITO</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+ 
+const params = new URLSearchParams(location.search);
+const catParam = params.get('cat');
+if(catParam){
+  categoriaActual = catParam;
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase().includes(catParam) || (catParam === 'todos' && btn.textContent === 'Todos'));
+  });
+}
+renderProductos();
+</script>
+</body>
+</html>
+ 

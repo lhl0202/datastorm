@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carrito — DataStorm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/estilo.css">
+<style>
+.cart-page {
+  position: relative; z-index: 1;
+  padding: 3rem clamp(1.2rem,5vw,4rem);
+  min-height: calc(100vh - 92px);
+}
+
+.cart-title {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 900;
+  margin-bottom: 2.5rem;
+}
+
+.cart-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.cart-items {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cart-table thead {
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+
+.cart-table th {
+  padding: 1rem;
+  text-align: left;
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cart-table td {
+  padding: 1.2rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.cart-table tr:hover td {
+  background: rgba(0,180,255,.03);
+}
+
+.cart-item-info {
+  display: flex;
+  gap: .8rem;
+  align-items: center;
+}
+
+.cart-item-icon {
+  font-size: 2rem;
+}
+
+.cart-item-details {
+  flex: 1;
+}
+
+.item-name {
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: .2rem;
+}
+
+.item-cat {
+  font-size: .72rem;
+  color: var(--text-dim);
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.qty-control button {
+  width: 28px; height: 28px;
+  border: none; background: none;
+  cursor: pointer; color: var(--text-dim);
+  font-size: .9rem;
+}
+
+.qty-control button:hover {
+  color: var(--neon);
+}
+
+.qty-value {
+  width: 40px;
+  text-align: center;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  font-weight: 700;
+  font-size: .85rem;
+}
+
+.item-price {
+  font-family: var(--font-head);
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--neon);
+  text-align: right;
+}
+
+.item-remove {
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--red);
+  transition: opacity .2s;
+}
+
+.item-remove:hover {
+  opacity: .7;
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-dim);
+}
+
+.empty-cart-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.empty-cart-text {
+  font-size: 1.1rem;
+  margin-bottom: .5rem;
+  color: var(--text);
+}
+
+/* Resumen */
+.cart-summary {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+.summary-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .8rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: .9rem;
+}
+
+.summary-row:last-of-type {
+  border-bottom: none;
+}
+
+.summary-label {
+  color: var(--text-dim);
+}
+
+.summary-value {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.summary-value.price {
+  font-family: var(--font-head);
+  color: var(--neon);
+  font-size: 1rem;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.2rem 0;
+  margin-top: 1rem;
+  border-top: 2px solid var(--border);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.summary-total .total-label {
+  color: var(--text);
+}
+
+.summary-total .total-value {
+  font-family: var(--font-head);
+  color: var(--neon);
+  text-shadow: 0 0 12px var(--neon-glow);
+}
+
+.checkout-btn {
+  width: 100%;
+  padding: 1rem;
+  background: var(--neon);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: all .2s;
+  box-shadow: 0 0 24px var(--neon-glow);
+}
+
+.checkout-btn:hover {
+  opacity: .88;
+  box-shadow: 0 0 40px var(--neon-glow);
+}
+
+.continue-shopping {
+  width: 100%;
+  padding: .75rem;
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: .8rem;
+  transition: all .2s;
+}
+
+.continue-shopping:hover {
+  border-color: var(--neon);
+  color: var(--neon);
+}
+
+.promo-input {
+  width: 100%;
+  padding: .6rem;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: .85rem;
+  margin-bottom: .6rem;
+}
+
+.apply-promo {
+  width: 100%;
+  padding: .6rem;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .85rem;
+  transition: all .2s;
+  margin-bottom: 1rem;
+}
+
+.apply-promo:hover {
+  border-color: var(--neon);
+  color: var(--neon);
+}
+
+.footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 3rem clamp(1.2rem,5vw,4rem) 0; background: rgba(0,0,0,.4); }
+.footer-grid { display: grid; grid-template-columns: 2fr repeat(3,1fr); gap: 2.5rem; padding-bottom: 2.5rem; }
+.footer-brand .logo { font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; margin-bottom: .75rem; color: var(--text); }
+.footer-brand .logo span { color: var(--neon); }
+.footer-brand p { font-size: .82rem; color: var(--text-dim); line-height: 1.7; }
+.footer-col h4 { font-size: .78rem; font-weight: 700; letter-spacing: .1em; color: var(--neon); margin-bottom: .9rem; }
+.footer-col li { margin-bottom: .45rem; }
+.footer-col a { font-size: .82rem; color: var(--text-dim); transition: color .2s; cursor: pointer; }
+.footer-col a:hover { color: var(--text); }
+.footer-bar { border-top: 1px solid var(--border); text-align: center; padding: 1rem; font-size: .72rem; color: var(--text-dim); }
+
+
+@media (max-width: 900px) {
+  .cart-container {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-summary {
+    position: static;
+  }
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<div class="top-bar">
+  <div class="marquee-track" id="marquee-track"></div>
+</div>
+
+<nav class="navbar">
+  <a class="nav-logo" href="../index.html">Data<span>Storm</span></a>
+
+  <div class="nav-center">
+    <a href="../index.html">Inicio</a>
+    <a href="catalogo.html">Catálogo</a>
+    <a href="catalogo.html?cat=pc">PCs Gamer</a>
+    <a href="catalogo.html?cat=componentes">Componentes</a>
+    <a href="catalogo.html?cat=perifericos">Periféricos</a>
+  </div>
+
+  <div class="nav-right">
+    <div class="search-wrap">
+      <button class="search-btn" id="search-btn" onclick="toggleSearch()" title="Buscar">🔍</button>
+      <div class="search-box" id="search-box">
+        <div class="search-input-wrap">
+          <span>🔍</span>
+          <input type="text" id="search-input" placeholder="Buscar productos…" oninput="buscar(this.value)" autocomplete="off">
+        </div>
+        <div class="search-results" id="search-results">
+          <div class="search-empty">Escribe para buscar…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-nav-item">
+      <button class="auth-trigger" id="auth-trigger" onclick="toggleAuthMenu(event)">
+        👤 <span id="auth-label">Mi cuenta</span> ▾
+      </button>
+      <div class="auth-dropdown" id="auth-dropdown"></div>
+    </div>
+
+    <button class="cart-btn" onclick="location.href='carrito.html'" title="Carrito">
+      🛒<span class="cart-badge" id="cart-count">0</span>
+    </button>
+  </div>
+</nav>
+
+<div class="auth-modal-overlay" id="auth-modal">
+  <div class="auth-modal-box">
+    <button class="auth-modal-close" onclick="cerrarModal()">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" id="tab-registro" onclick="switchTab('registro')">Crear cuenta</button>
+      <div class="auth-tab-bar" id="tab-bar"></div>
+    </div>
+    <div id="panel-login">
+      <div class="form-group">
+        <label>CORREO ELECTRÓNICO</label>
+        <input type="email" id="l-correo" placeholder="tu@correo.com" onkeypress="if(event.key==='Enter')loginSubmit()">
+      </div>
+      <div class="form-group">
+        <label>CONTRASEÑA</label>
+        <input type="password" id="l-pass" placeholder="••••••••" onkeypress="if(event.key==='Enter')loginSubmit()">
+      </div>
+      <button class="btn-submit" onclick="loginSubmit()">Iniciar sesión</button>
+      <p class="auth-switch">¿No tienes cuenta? <a onclick="switchTab('registro')">Regístrate</a></p>
+    </div>
+    <div id="panel-registro" style="display:none">
+      <div class="form-group">
+        <label>NOMBRE COMPLETO</label>
+        <input type="text" id="r-nombre" placeholder="Jorge Morales Chávez">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="form-group">
+          <label>TELÉFONO</label>
+          <input type="tel" id="r-tel" placeholder="33-1234-5678">
+        </div>
+        <div class="form-group">
+          <label>CORREO</label>
+          <input type="email" id="r-correo" placeholder="tu@correo.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>DOMICILIO</label>
+        <input type="text" id="r-dom" placeholder="Calle, número, ciudad">
+      </div>
+      <div class="form-group">
+        <label>CONTRASEÑA</label>
+        <input type="password" id="r-pass" placeholder="Mínimo 6 caracteres">
+      </div>
+      <button class="btn-submit" onclick="registroSubmit()">Crear mi cuenta</button>
+      <p class="auth-switch">¿Ya tienes cuenta? <a onclick="switchTab('login')">Inicia sesión</a></p>
+    </div>
+  </div>
+</div>
+
+<main class="cart-page">
+  <h1 class="cart-title">Tu carrito</h1>
+
+  <div class="cart-container">
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-summary">
+      <div class="summary-title">Resumen</div>
+      
+      <input type="text" class="promo-input" id="promo-code" placeholder="Código de descuento">
+      <button class="apply-promo" onclick="aplicarCodigo()">Aplicar código</button>
+
+      <div class="summary-row">
+        <span class="summary-label">Subtotal</span>
+        <span class="summary-value price" id="subtotal">$0</span>
+      </div>
+
+      <div class="summary-row">
+        <span class="summary-label">Envío</span>
+        <span class="summary-value price" id="shipping">$99</span>
+      </div>
+
+      <div class="summary-row" id="discount-row" style="display:none">
+        <span class="summary-label">Descuento</span>
+        <span class="summary-value price" id="discount">-$0</span>
+      </div>
+
+      <div class="summary-total">
+        <span class="total-label">Total</span>
+        <span class="total-value" id="total">$0</span>
+      </div>
+
+      <button class="checkout-btn" onclick="location.href='checkout.html'">Proceder al pago</button>
+      <button class="continue-shopping" onclick="location.href='catalogo.html'">Seguir comprando</button>
+
+      <div style="font-size:.75rem; color:var(--text-dim); margin-top:1.5rem; text-align:center; padding-top:1.5rem; border-top: 1px solid var(--border)">
+        <strong>Beneficios incluidos:</strong><br>
+        ✓ Envío gratis en PCs<br>
+        ✓ Garantía 1 año<br>
+        ✓ Soporte 24/7
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo">Data<span>Storm</span></div>
+      <p>Tienda de computadoras en línea. PCs armadas, componentes y periféricos con envío a toda la república mexicana.</p>
+    </div>
+    <div class="footer-col">
+      <h4>TIENDA</h4>
+      <ul>
+        <li><a href="catalogo.html">Catálogo</a></li>
+        <li><a href="catalogo.html?cat=pc">PCs Gamer</a></li>
+        <li><a href="catalogo.html?cat=componentes">Componentes</a></li>
+        <li><a href="catalogo.html?cat=perifericos">Periféricos</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>AYUDA</h4>
+      <ul>
+        <li><a href="#">Seguimiento de pedido</a></li>
+        <li><a href="#">Garantía</a></li>
+        <li><a href="#">Devoluciones</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>CONTACTO</h4>
+      <ul>
+        <li><a href="mailto:ventas@datastorm.mx">📧 ventas@datastorm.mx</a></li>
+        <li><a href="tel:+523301234">📞 312 · 5673· 7600</a></li>
+        <li><a href="#">📍 Villa de Alvares, Colima</a></li>
+        <li><a href="#">Solo envíos dentro de México 🇲🇽</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bar">
+    © 2026 DataStorm — Jorge Morales Chávez · Gibran Mesina Mejía
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<script src="../assets/js/particulas.js"></script>
+<script src="../assets/js/productos.js"></script>
+<script src="../assets/js/carrito.js"></script>
+<script src="../assets/js/busqueda.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/funciones.js"></script>
+
+<script>
+let descuentoAplicado = 0;
+const ENVIO = 99;
+
+function renderCarrito(){
+  const container = document.getElementById('cart-items');
+  
+  if(!carrito.length){
+    container.innerHTML = `
+      <div class="empty-cart">
+        <div class="empty-cart-icon">🛒</div>
+        <div class="empty-cart-text">Tu carrito está vacío</div>
+        <p>Agrega productos desde el catálogo para comenzar</p>
+        <a href="catalogo.html" style="color:var(--neon);font-weight:600;margin-top:1rem;display:block">Ver catálogo →</a>
+      </div>
+    `;
+    return;
+  }
+
+  let html = `<table class="cart-table"><thead><tr>
+    <th>PRODUCTO</th><th>PRECIO</th><th>CANTIDAD</th><th>SUBTOTAL</th><th></th>
+  </tr></thead><tbody>`;
+
+  carrito.forEach(item => {
+    const subtotal = item.precio * item.qty;
+    html += `
+      <tr>
+        <td>
+          <div class="cart-item-info">
+            <img src="${getImagePath(item.image)}" alt="${item.nombre}" style="width:120px; height:120px; object-fit:contain; background:var(--bg3); border-radius:4px; padding:4px;" onerror="this.style.display='none';" class="cart-item-icon">
+            <div class="cart-item-details">
+              <div class="item-name">${item.nombre}</div>
+              <div class="item-cat">${item.cat}</div>
+            </div>
+          </div>
+        </td>
+        <td>$${item.precio.toLocaleString('es-MX')}</td>
+        <td>
+          <div class="qty-control">
+            <button onclick="cambiarCantidad(${item.id}, ${item.qty - 1})">−</button>
+            <span class="qty-value">${item.qty}</span>
+            <button onclick="cambiarCantidad(${item.id}, ${item.qty + 1})">+</button>
+          </div>
+        </td>
+        <td class="item-price">$${subtotal.toLocaleString('es-MX')}</td>
+        <td><span class="item-remove" onclick="quitarDelCarrito(${item.id})">✕</span></td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+  actualizarResumen();
+}
+
+function actualizarResumen(){
+  const subtotal = carrito.reduce((s, i) => s + i.precio * i.qty, 0);
+  const descuento = descuentoAplicado;
+  const total = subtotal + ENVIO - descuento;
+
+  document.getElementById('subtotal').textContent = `$${subtotal.toLocaleString('es-MX')}`;
+  document.getElementById('total').textContent = `$${total.toLocaleString('es-MX')}`;
+
+  if(descuento > 0){
+    document.getElementById('discount-row').style.display = 'flex';
+    document.getElementById('discount').textContent = `-$${descuento.toLocaleString('es-MX')}`;
+  } else {
+    document.getElementById('discount-row').style.display = 'none';
+  }
+}
+
+function aplicarCodigo(){
+  const codigo = document.getElementById('promo-code').value.toUpperCase();
+  if(codigo === 'DATASTORM10'){
+    descuentoAplicado = 500;
+    toast('✅ Código aplicado: descuento de $500');
+  } else if(codigo === 'WELCOME20'){
+    descuentoAplicado = 1000;
+    toast('✅ Código aplicado: descuento de $1,000');
+  } else if(codigo){
+    toast('❌ Código no válido');
+  }
+  actualizarResumen();
+}
+
+function irAPago(){
+  if(!carrito.length){
+    toast('⚠️ Tu carrito está vacío');
+    return;
+  }
+  const usuario = getUser();
+  if(!usuario){
+    toast('⚠️ Inicia sesión para continuar');
+    setTimeout(() => abrirModal('login'), 600);
+    return;
+  }
+  location.href = 'pago.html';
+}
+
+renderCarrito();
+</script>
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armar PC — DataStorm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/estilo.css">
+<style>
+.builder-page {
+  position: relative; z-index: 1;
+  padding: 3rem clamp(1.2rem,5vw,4rem);
+  min-height: calc(100vh - 92px);
+}
+
+.builder-title {
+  font-family: var(--font-head);
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+
+.builder-title span { color: var(--neon); }
+
+.builder-subtitle {
+  color: var(--text-dim);
+  margin-bottom: 3rem;
+  font-size: 1rem;
+}
+
+.builder-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 3rem;
+}
+
+.builder-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.builder-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.section-icon {
+  font-size: 1.8rem;
+}
+
+.section-title {
+  font-family: var(--font-head);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.section-subtitle {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.component-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.2rem;
+}
+
+.component-card {
+  background: var(--bg3);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+}
+
+.component-card:hover {
+  border-color: var(--neon);
+  box-shadow: 0 0 16px var(--neon-glow);
+}
+
+.component-card.selected {
+  border-color: var(--neon);
+  background: rgba(0,180,255,.08);
+}
+
+.component-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.component-specs {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+}
+
+.component-price {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--neon);
+}
+
+.builder-summary {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+.summary-title {
+  font-family: var(--font-head);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.summary-item-name {
+  color: var(--text-dim);
+}
+
+.summary-item-value {
+  color: var(--neon);
+  font-weight: 700;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--neon);
+}
+
+.summary-total-label {
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.summary-total-value {
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--neon);
+}
+
+.summary-btn {
+  width: 100%;
+  padding: 1rem;
+  background: var(--neon);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: opacity .2s;
+  box-shadow: 0 0 20px var(--neon-glow);
+}
+
+.summary-btn:hover {
+  opacity: 0.85;
+}
+
+.empty-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 1024px) {
+  .builder-container {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .component-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .builder-subtitle {
+    margin-bottom: 2rem;
+  }
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="top-bar"><div class="marquee-track" id="marquee-track"></div></div>
+<nav class="navbar">
+  <a class="nav-logo" href="../index.html">Data<span>Storm</span></a>
+  <div class="nav-center">
+    <a href="../index.html">Inicio</a>
+    <a href="catalogo.html">Catálogo</a>
+    <a href="catalogo.html?cat=pc">PCs Gamer</a>
+    <a href="catalogo.html?cat=componentes">Componentes</a>
+    <a href="catalogo.html?cat=perifericos">Periféricos</a>
+  </div>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <button class="search-btn" id="search-btn" onclick="toggleSearch()" title="Buscar">🔍</button>
+      <div class="search-box" id="search-box">
+        <div class="search-input-wrap"><span>🔍</span><input type="text" id="search-input" placeholder="Buscar productos…" oninput="buscar(this.value)" autocomplete="off"></div>
+        <div class="search-results" id="search-results"><div class="search-empty">Escribe para buscar…</div></div>
+      </div>
+    </div>
+    <div class="auth-nav-item">
+      <button class="auth-trigger" id="auth-trigger" onclick="toggleAuthMenu(event)">👤 <span id="auth-label">Mi cuenta</span> ▾</button>
+      <div class="auth-dropdown" id="auth-dropdown"></div>
+    </div>
+    <button class="cart-btn" onclick="location.href='carrito.html'" title="Carrito">🛒<span class="cart-badge" id="cart-count">0</span></button>
+  </div>
+</nav>
+<div class="auth-modal-overlay" id="auth-modal">
+  <div class="auth-modal-box">
+    <button class="auth-modal-close" onclick="cerrarModal()">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" id="tab-registro" onclick="switchTab('registro')">Crear cuenta</button>
+      <div class="auth-tab-bar" id="tab-bar"></div>
+    </div>
+    <div id="panel-login">
+      <div class="form-group"><label>CORREO ELECTRÓNICO</label><input type="email" id="l-correo" placeholder="tu@correo.com" onkeypress="if(event.key==='Enter')loginSubmit()"></div>
+      <div class="form-group"><label>CONTRASEÑA</label><input type="password" id="l-pass" placeholder="••••••••" onkeypress="if(event.key==='Enter')loginSubmit()"></div>
+      <button class="btn-submit" onclick="loginSubmit()">Iniciar sesión</button>
+      <p class="auth-switch">¿No tienes cuenta? <a onclick="switchTab('registro')">Regístrate</a></p>
+    </div>
+    <div id="panel-registro" style="display:none">
+      <div class="form-group"><label>NOMBRE COMPLETO</label><input type="text" id="r-nombre" placeholder="Jorge Morales Chávez"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="form-group"><label>TELÉFONO</label><input type="tel" id="r-tel" placeholder="33-1234-5678"></div>
+        <div class="form-group"><label>CORREO</label><input type="email" id="r-correo" placeholder="tu@correo.com"></div>
+      </div>
+      <div class="form-group"><label>DOMICILIO</label><input type="text" id="r-dom" placeholder="Calle, número, ciudad"></div>
+      <div class="form-group"><label>CONTRASEÑA</label><input type="password" id="r-pass" placeholder="Mínimo 6 caracteres"></div>
+      <button class="btn-submit" onclick="registroSubmit()">Crear mi cuenta</button>
+      <p class="auth-switch">¿Ya tienes cuenta? <a onclick="switchTab('login')">Inicia sesión</a></p>
+    </div>
+  </div>
+</div>
+
+<section class="builder-page">
+  <h1 class="builder-title">Arma tu PC <span>Personalizada</span></h1>
+  <p class="builder-subtitle">Elige cada componente y nosotros la armamos, pruebamos e instalamos Windows 11 PRO. Envío incluido. 1 año de garantía.</p>
+  
+  <div class="builder-container">
+    <div class="builder-sections">
+      <!-- Procesador -->
+      <div class="builder-section">
+        <div class="section-header">
+          <div class="section-icon">🧠</div>
+          <div>
+            <div class="section-title">Procesador</div>
+            <div class="section-subtitle">CPU para tu PC</div>
+          </div>
+        </div>
+        <div class="component-grid" id="grid-cpu">
+          <div class="empty-message">Cargando procesadores...</div>
+        </div>
+      </div>
+
+      <!-- Placa Madre -->
+      <div class="builder-section">
+        <div class="section-header">
+          <div class="section-icon">⚙️</div>
+          <div>
+            <div class="section-title">Placa Madre</div>
+            <div class="section-subtitle">Socket compatible</div>
+          </div>
+        </div>
+        <div class="component-grid" id="grid-motherboard">
+          <div class="empty-message">Selecciona un procesador primero</div>
+        </div>
+      </div>
+
+      <!-- RAM -->
+      <div class="builder-section">
+        <div class="section-header">
+          <div class="section-icon">🧱</div>
+          <div>
+            <div class="section-title">Memoria RAM</div>
+            <div class="section-subtitle">DDR5 o DDR4</div>
+          </div>
+        </div>
+        <div class="component-grid" id="grid-ram">
+          <div class="empty-message">Cargando memoria...</div>
+        </div>
+      </div>
+
+      <!-- Almacenamiento -->
+      <div class="builder-section">
+        <div class="section-header">
+          <div class="section-icon">💿</div>
+          <div>
+            <div class="section-title">Almacenamiento</div>
+            <div class="section-subtitle">SSD NVMe o M.2</div>
+          </div>
+        </div>
+        <div class="component-grid" id="grid-storage">
+          <div class="empty-message">Cargando almacenamiento...</div>
+        </div>
+      </div>
+
+      <!-- GPU -->
+      <div class="builder-section">
+        <div class="section-header">
+          <div class="section-icon">🎮</div>
+          <div>
+            <div class="section-title">Tarjeta Gráfica</div>
+            <div class="section-subtitle">GPU dedicada</div>
+          </div>
+        </div>
+        <div class="component-grid" id="grid-gpu">
+          <div class="empty-message">Cargando tarjetas gráficas...</div>
+        </div>
+      </div>
+
+      <!-- Fuente -->
+      <div class="builder-section">
+        <div class="section-header">
+          <div class="section-icon">⚡</div>
+          <div>
+            <div class="section-title">Fuente de Poder</div>
+            <div class="section-subtitle">Potencia recomendada</div>
+          </div>
+        </div>
+        <div class="component-grid" id="grid-psu">
+          <div class="empty-message">Cargando fuentes...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="builder-summary" id="summary">
+      <div class="summary-title">🛠️ Tu PC</div>
+      <div id="summary-items">
+        <div class="empty-message">Selecciona componentes para armar tu PC</div>
+      </div>
+      <div class="summary-total">
+        <span class="summary-total-label">Total:</span>
+        <span class="summary-total-value" id="total-price">$0</span>
+      </div>
+      <button class="summary-btn" onclick="agregarPCArmaAlCarrito()">+ Agregar al Carrito</button>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="logo">Data<span>Storm</span></div><p>Tienda de computadoras en línea. PCs armadas, componentes y periféricos con envío a toda la república mexicana.</p></div>
+    <div class="footer-col"><h4>TIENDA</h4><ul><li><a href="catalogo.html">Catálogo</a></li><li><a href="catalogo.html?cat=pc">PCs Gamer</a></li><li><a href="catalogo.html?cat=componentes">Componentes</a></li><li><a href="catalogo.html?cat=perifericos">Periféricos</a></li></ul></div>
+    <div class="footer-col"><h4>AYUDA</h4><ul><li><a href="#">Seguimiento de pedido</a></li><li><a href="#">Garantía</a></li><li><a href="#">Devoluciones</a></li><li><a href="#">Contacto</a></li></ul></div>
+    <div class="footer-col"><h4>CONTACTO</h4><ul><li><a href="mailto:ventas@datastorm.mx">📧 ventas@datastorm.mx</a></li><li><a href="tel:+523301234">📞 312 · 5673· 7600</a></li><li><a href="#">📍 Villa de Alvares, Colima</a></li><li><a href="#">Solo envíos dentro de México 🇲🇽</a></li></ul></div>
+  </div>
+  <div class="footer-bar">© 2026 DataStorm — Jorge Morales Chávez · Gibran Mesina Mejía</div>
+</footer>
+
+<div id="toast"></div>
+
+<script src="../assets/js/particulas.js"></script>
+<script src="../assets/js/productos.js"></script>
+<script src="../assets/js/carrito.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/funciones.js"></script>
+<script src="../assets/js/busqueda.js"></script>
+
+<script>
+let pcPersonalizada = {
+  nombre: 'PC Personalizada',
+  precio: 0,
+  componentes: {
+    cpu: null,
+    motherboard: null,
+    ram: null,
+    storage: null,
+    gpu: null,
+    psu: null
+  }
+};
+
+function renderComponentes() {
+  // CPU
+  const cpuProducts = PRODUCTOS.filter(p => p.id === 5);
+  document.getElementById('grid-cpu').innerHTML = cpuProducts.length ? 
+    cpuProducts.map(p => `
+      <div class="component-card" onclick="seleccionarComponente('cpu', ${p.id})">
+        <div class="component-name">${p.nombre}</div>
+        <div class="component-specs">${p.specs}</div>
+        <div class="component-price">$${p.precio.toLocaleString('es-MX')}</div>
+      </div>
+    `).join('') : '<div class="empty-message">No disponible</div>';
+
+  // RAM
+  const ramProducts = PRODUCTOS.filter(p => p.id === 7);
+  document.getElementById('grid-ram').innerHTML = ramProducts.length ?
+    ramProducts.map(p => `
+      <div class="component-card" onclick="seleccionarComponente('ram', ${p.id})">
+        <div class="component-name">${p.nombre}</div>
+        <div class="component-specs">${p.specs}</div>
+        <div class="component-price">$${p.precio.toLocaleString('es-MX')}</div>
+      </div>
+    `).join('') : '<div class="empty-message">No disponible</div>';
+
+  // Storage
+  const storageProducts = PRODUCTOS.filter(p => p.id === 8);
+  document.getElementById('grid-storage').innerHTML = storageProducts.length ?
+    storageProducts.map(p => `
+      <div class="component-card" onclick="seleccionarComponente('storage', ${p.id})">
+        <div class="component-name">${p.nombre}</div>
+        <div class="component-specs">${p.specs}</div>
+        <div class="component-price">$${p.precio.toLocaleString('es-MX')}</div>
+      </div>
+    `).join('') : '<div class="empty-message">No disponible</div>';
+
+  // GPU
+  const gpuProducts = PRODUCTOS.filter(p => p.id === 6);
+  document.getElementById('grid-gpu').innerHTML = gpuProducts.length ?
+    gpuProducts.map(p => `
+      <div class="component-card" onclick="seleccionarComponente('gpu', ${p.id})">
+        <div class="component-name">${p.nombre}</div>
+        <div class="component-specs">${p.specs}</div>
+        <div class="component-price">$${p.precio.toLocaleString('es-MX')}</div>
+      </div>
+    `).join('') : '<div class="empty-message">No disponible</div>';
+
+  updateBadge();
+  actualizarResumen();
+}
+
+function seleccionarComponente(tipo, id) {
+  const producto = PRODUCTOS.find(p => p.id === id);
+  if (producto) {
+    pcPersonalizada.componentes[tipo] = producto;
+    document.querySelectorAll(`#grid-${tipo === 'cpu' ? 'cpu' : tipo === 'ram' ? 'ram' : tipo === 'storage' ? 'storage' : tipo === 'gpu' ? 'gpu' : 'psu'} .component-card`).forEach(card => {
+      card.classList.toggle('selected', card.querySelector('.component-price').textContent.includes(producto.precio.toLocaleString('es-MX')));
+    });
+    actualizarResumen();
+  }
+}
+
+function actualizarResumen() {
+  let total = 0;
+  let items = [];
+
+  Object.keys(pcPersonalizada.componentes).forEach(tipo => {
+    if (pcPersonalizada.componentes[tipo]) {
+      const comp = pcPersonalizada.componentes[tipo];
+      total += comp.precio;
+      items.push(`
+        <div class="summary-item">
+          <span class="summary-item-name">${comp.nombre.substring(0, 20)}</span>
+          <span class="summary-item-value">$${comp.precio.toLocaleString('es-MX')}</span>
+        </div>
+      `);
+    }
+  });
+
+  document.getElementById('summary-items').innerHTML = items.length ? items.join('') : '<div class="empty-message">Selecciona componentes</div>';
+  document.getElementById('total-price').textContent = `$${total.toLocaleString('es-MX')}`;
+  pcPersonalizada.precio = total;
+}
+
+function agregarPCArmaAlCarrito() {
+  if (Object.values(pcPersonalizada.componentes).some(c => !c)) {
+    toast('⚠️ Completa todos los componentes');
+    return;
+  }
+  
+  agregarCarrito(999);
+  toast('✅ PC personalizada agregada al carrito');
+}
+
+renderComponentes();
+</script>
+</body>
+</html>

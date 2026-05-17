@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Test de Rutas</title>
+<style>
+  body { background: #000; color: #fff; font-family: Arial; padding: 20px; }
+  .test { margin: 20px 0; padding: 10px; border: 1px solid #0f0; }
+  img { width: 100px; height: 100px; object-fit: contain; border: 1px solid #fff; }
+  .error { color: red; }
+</style>
+</head>
+<body>
+
+<h1>Test de Rutas de Imágenes</h1>
+
+<div class="test">
+  <h2>Desde raíz (./assets/image/)</h2>
+  <img src="./assets/image/id1.png" alt="id1" onerror="this.nextElementSibling.innerHTML='❌ FALLA'">
+  <span>✓</span>
+</div>
+
+<div class="test">
+  <h2>Desde páginas (../assets/image/)</h2>
+  <img src="../assets/image/id1.png" alt="id1" onerror="this.nextElementSibling.innerHTML='❌ FALLA'">
+  <span>✓</span>
+</div>
+
+<div class="test">
+  <h2>Relative a assets/js (../../assets/image/)</h2>
+  <img src="../../assets/image/id1.png" alt="id1" onerror="this.nextElementSibling.innerHTML='❌ FALLA'">
+  <span>✓</span>
+</div>
+
+<p>Abre este archivo desde el navegador en la raíz del proyecto para ver cuál ruta funciona.</p>
+
+</body>
+</html>

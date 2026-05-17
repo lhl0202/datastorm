@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataStorm — Tienda de Computadoras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/estilo.css">
+<style>
+.hero { position: relative; z-index: 1; min-height: calc(100vh - 92px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4rem 2rem; }
+.hero-eyebrow { display: inline-flex; align-items: center; gap: .5rem; font-size: .72rem; font-weight: 700; letter-spacing: .15em; color: var(--neon); border: 1px solid rgba(0,180,255,.3); background: rgba(0,180,255,.06); padding: .4rem 1rem; border-radius: 99px; margin-bottom: 1.5rem; animation: fadeUp .6s ease both; }
+.hero-title { font-family: var(--font-head); font-size: clamp(2.4rem, 7vw, 5.5rem); font-weight: 900; line-height: 1.05; margin-bottom: 1.2rem; animation: fadeUp .7s .1s ease both; }
+.hero-title .glow { color: var(--neon); text-shadow: 0 0 30px rgba(0,180,255,.6), 0 0 60px rgba(0,180,255,.3); }
+.hero-sub { font-size: 1.05rem; color: var(--text-dim); max-width: 480px; line-height: 1.7; margin-bottom: 2.5rem; animation: fadeUp .7s .2s ease both; }
+.hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeUp .7s .3s ease both; }
+.btn-primary { padding: .8rem 2.2rem; border-radius: var(--radius); background: var(--neon); color: #000; font-weight: 700; font-size: .95rem; transition: box-shadow .2s, transform .2s; box-shadow: 0 0 24px var(--neon-glow); cursor: pointer; border: none; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,180,255,.5); }
+.btn-ghost { padding: .8rem 2.2rem; border-radius: var(--radius); border: 1.5px solid var(--border); color: var(--text); font-weight: 500; font-size: .95rem; transition: border-color .2s, color .2s; background: none; cursor: pointer; }
+.btn-ghost:hover { border-color: var(--neon); color: var(--neon); }
+.hero-stats { display: flex; gap: 3rem; margin-top: 3.5rem; animation: fadeUp .7s .45s ease both; }
+.stat-item { text-align: center; }
+.stat-num { font-family: var(--font-head); font-size: 1.6rem; font-weight: 900; color: var(--neon); text-shadow: 0 0 20px var(--neon-glow); }
+.stat-label { font-size: .72rem; color: var(--text-dim); margin-top: .2rem; letter-spacing: .06em; }
+.benefits { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: rgba(0,180,255,.04); }
+.benefit-item { display: flex; align-items: center; gap: .9rem; padding: 1.4rem 1.8rem; border-right: 1px solid var(--border); }
+.benefit-item:last-child { border-right: none; }
+.benefit-icon { font-size: 1.5rem; }
+.benefit-title { font-size: .85rem; font-weight: 700; }
+.benefit-sub { font-size: .72rem; color: var(--text-dim); }
+.section { position: relative; z-index: 1; padding: 5rem clamp(1.2rem,5vw,4rem); }
+.section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2.5rem; }
+.section-title { font-family: var(--font-head); font-size: 1.3rem; font-weight: 900; letter-spacing: .06em; }
+.section-title span { color: var(--neon); }
+.section-line { display: block; width: 40px; height: 3px; background: var(--neon); border-radius: 2px; margin-top: .5rem; box-shadow: 0 0 8px var(--neon); }
+.section-link { font-size: .8rem; color: var(--neon); font-weight: 600; letter-spacing: .04em; opacity: .8; transition: opacity .2s; cursor: pointer; }
+.section-link:hover { opacity: 1; }
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.2rem; }
+.product-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: transform .3s, box-shadow .3s, border-color .3s; opacity: 0; transform: translateY(30px); }
+.product-card.visible { opacity: 1; transform: translateY(0); transition: opacity .5s ease, transform .5s ease, box-shadow .3s, border-color .3s; }
+.product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,180,255,.15), 0 0 0 1px rgba(0,180,255,.3); border-color: rgba(0,180,255,.35); }
+.product-img { aspect-ratio: 1; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; overflow: hidden; }
+.product-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 60%, var(--card)); }
+.product-badge { position: absolute; top: 10px; left: 10px; background: var(--red); color: #fff; font-size: .65rem; font-weight: 700; letter-spacing: .06em; padding: .25rem .6rem; border-radius: 6px; z-index: 1; }
+.product-body { padding: 1rem 1rem 1.2rem; }
+.product-cat { font-size: .65rem; font-weight: 700; letter-spacing: .12em; color: var(--neon); text-transform: uppercase; margin-bottom: .35rem; }
+.product-name { font-size: .9rem; font-weight: 700; line-height: 1.35; margin-bottom: .6rem; color: var(--text); }
+.product-specs { font-size: .72rem; color: var(--text-dim); margin-bottom: .8rem; line-height: 1.5; }
+.product-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+.product-price { font-family: var(--font-head); font-size: 1rem; font-weight: 700; color: var(--neon); }
+.product-price small { font-family: var(--font-body); font-size: .65rem; color: var(--text-dim); font-weight: 400; display: block; }
+.btn-add-card { background: var(--neon); color: #000; border: none; border-radius: 8px; padding: .45rem .9rem; font-family: var(--font-body); font-size: .78rem; font-weight: 700; cursor: pointer; transition: opacity .2s, transform .1s; }
+.btn-add-card:hover { opacity: .85; }
+.btn-add-card:active { transform: scale(.95); }
+.mid-banner { position: relative; z-index: 1; margin: 2rem clamp(1.2rem,5vw,4rem); border-radius: calc(var(--radius)*1.5); overflow: hidden; background: linear-gradient(135deg, #000d1a 0%, #001433 50%, #000a12 100%); border: 1px solid rgba(0,180,255,.2); padding: 3rem 3.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+.mid-banner::before { content: ''; position: absolute; top: -50%; right: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,180,255,.15) 0%, transparent 70%); pointer-events: none; }
+.banner-text h2 { font-family: var(--font-head); font-size: clamp(1.2rem,3vw,2rem); font-weight: 900; margin-bottom: .5rem; }
+.banner-text h2 span { color: var(--neon); }
+.banner-text p { color: var(--text-dim); font-size: .9rem; }
+.banner-stats { display: flex; gap: 2.5rem; flex-shrink: 0; }
+.bstat { text-align: center; }
+.bstat-num { font-family: var(--font-head); font-size: 1.8rem; font-weight: 900; color: var(--neon); }
+.bstat-label { font-size: .7rem; color: var(--text-dim); margin-top: .2rem; }
+.footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 3rem clamp(1.2rem,5vw,4rem) 0; background: rgba(0,0,0,.4); }
+.footer-grid { display: grid; grid-template-columns: 2fr repeat(3,1fr); gap: 2.5rem; padding-bottom: 2.5rem; }
+.footer-brand .logo { font-family: var(--font-head); font-size: 1.1rem; font-weight: 900; margin-bottom: .75rem; color: var(--text); }
+.footer-brand .logo span { color: var(--neon); }
+.footer-brand p { font-size: .82rem; color: var(--text-dim); line-height: 1.7; }
+.footer-col h4 { font-size: .78rem; font-weight: 700; letter-spacing: .1em; color: var(--neon); margin-bottom: .9rem; }
+.footer-col li { margin-bottom: .45rem; }
+.footer-col a { font-size: .82rem; color: var(--text-dim); transition: color .2s; cursor: pointer; }
+.footer-col a:hover { color: var(--text); }
+.footer-bar { border-top: 1px solid var(--border); text-align: center; padding: 1rem; font-size: .72rem; color: var(--text-dim); }
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+@media (max-width: 900px) { .benefits { grid-template-columns: 1fr 1fr; } .benefit-item:nth-child(2) { border-right: none; } .footer-grid { grid-template-columns: 1fr 1fr; } .mid-banner { flex-direction: column; text-align: center; } .banner-stats { justify-content: center; } }
+@media (max-width: 600px) { .nav-center { display: none; } .benefits { grid-template-columns: 1fr; } .benefit-item { border-right: none; border-bottom: 1px solid var(--border); } .hero-stats { gap: 1.5rem; } .footer-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="top-bar"><div class="marquee-track" id="marquee-track"></div></div>
+<nav class="navbar">
+  <a class="nav-logo" href="index.html">Data<span>Storm</span></a>
+  <div class="nav-center">
+    <a href="index.html" class="active">Inicio</a>
+    <a href="pages/catalogo.html">Catálogo</a>
+    <a href="pages/catalogo.html?cat=pc">PCs Gamer</a>
+    <a href="pages/catalogo.html?cat=componentes">Componentes</a>
+    <a href="pages/catalogo.html?cat=perifericos">Periféricos</a>
+  </div>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <button class="search-btn" id="search-btn" onclick="toggleSearch()" title="Buscar">🔍</button>
+      <div class="search-box" id="search-box">
+        <div class="search-input-wrap"><span>🔍</span><input type="text" id="search-input" placeholder="Buscar productos…" oninput="buscar(this.value)" autocomplete="off"></div>
+        <div class="search-results" id="search-results"><div class="search-empty">Escribe para buscar…</div></div>
+      </div>
+    </div>
+    <div class="auth-nav-item">
+      <button class="auth-trigger" id="auth-trigger" onclick="toggleAuthMenu(event)">👤 <span id="auth-label">Mi cuenta</span> ▾</button>
+      <div class="auth-dropdown" id="auth-dropdown"></div>
+    </div>
+    <button class="cart-btn" onclick="location.href='pages/carrito.html'" title="Carrito">🛒<span class="cart-badge" id="cart-count">0</span></button>
+  </div>
+</nav>
+<section class="hero">
+  <div class="hero-eyebrow">⚡ NUEVAS PCSARMADAS LISTAS PARA USAR</div>
+  <h1 class="hero-title">Potencia tu setup con <span class="glow">DataStorm</span></h1>
+  <p class="hero-sub">PCs gamer de alto rendimiento, componentes premium y periféricos profesionales para llevar tu experiencia al siguiente nivel.</p>
+  <div class="hero-btns">
+    <a href="pages/catalogo.html" class="btn-primary">Ver catálogo completo</a>
+    <button class="btn-ghost" onclick="document.querySelector('.benefits').scrollIntoView({behavior:'smooth'})">Conocer más</button>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">12+</div><div class="stat-label">Productos</div></div>
+    <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Garantía</div></div>
+    <div class="stat-item"><div class="stat-num">🇲🇽</div><div class="stat-label">Envíos México</div></div>
+  </div>
+</section>
+<div class="benefits">
+  <div class="benefit-item"><span class="benefit-icon">⚡</span><div><div class="benefit-title">Máximo Rendimiento</div><div class="benefit-sub">Para gaming y trabajo</div></div></div>
+  <div class="benefit-item"><span class="benefit-icon">🚚</span><div><div class="benefit-title">Envío Rápido</div><div class="benefit-sub">A toda la república</div></div></div>
+  <div class="benefit-item"><span class="benefit-icon">🛡</span><div><div class="benefit-title">Garantía Incluida</div><div class="benefit-sub">En todos los equipos</div></div></div>
+  <div class="benefit-item"><span class="benefit-icon">🔒</span><div><div class="benefit-title">Pago Seguro</div><div class="benefit-sub">Visa · MC · Debit</div></div></div>
+</div>
+<section class="section">
+  <div class="section-header reveal">
+    <div><div class="section-title">🖥 PCs de <span>Escritorio</span> Armadas</div><span class="section-line"></span></div>
+    <a href="pages/catalogo.html?cat=pc" class="section-link">Ver todas →</a>
+  </div>
+  <div class="products-grid" id="grid-pcs"></div>
+</section>
+<div class="mid-banner reveal">
+  <div class="banner-text">
+    <h2>Armamos tu PC<br><span>a tu medida</span></h2>
+    <p>Elige componentes, nosotros la ensamblamos y enviamos lista para usar.</p>
+    <br>
+    <a href="pages/armar-pc.html" class="btn-primary" style="display:inline-block;margin-top:.5rem">Armar mi PC</a>
+  </div>
+  <div class="banner-stats">
+    <div class="bstat"><div class="bstat-num">100%</div><div class="bstat-label">Lista para usar</div></div>
+    <div class="bstat"><div class="bstat-num">Win 11</div><div class="bstat-label">PRO activado</div></div>
+    <div class="bstat"><div class="bstat-num">1 Año</div><div class="bstat-label">De garantía</div></div>
+  </div>
+</div>
+<section class="section">
+  <div class="section-header reveal">
+    <div><div class="section-title">🧩 <span>Componentes</span></div><span class="section-line"></span></div>
+    <a href="pages/catalogo.html?cat=componentes" class="section-link">Ver todos →</a>
+  </div>
+  <div class="products-grid" id="grid-componentes"></div>
+</section>
+<section class="section">
+  <div class="section-header reveal">
+    <div><div class="section-title">⌨️ <span>Periféricos</span></div><span class="section-line"></span></div>
+    <a href="pages/catalogo.html?cat=perifericos" class="section-link">Ver todos →</a>
+  </div>
+  <div class="products-grid" id="grid-perifericos"></div>
+</section>
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="logo">Data<span>Storm</span></div><p>Tienda de computadoras en línea. PCs armadas, componentes y periféricos con envío a toda la república mexicana.</p></div>
+    <div class="footer-col"><h4>TIENDA</h4><ul><li><a href="pages/catalogo.html">Catálogo</a></li><li><a href="pages/catalogo.html?cat=pc">PCs Gamer</a></li><li><a href="pages/catalogo.html?cat=componentes">Componentes</a></li><li><a href="pages/catalogo.html?cat=perifericos">Periféricos</a></li></ul></div>
+    <div class="footer-col"><h4>AYUDA</h4><ul><li><a href="#">Garantía</a></li><li><a href="#">Devoluciones</a></li><li><a href="#">Contacto</a></li></ul></div>
+    <div class="footer-col"><h4>CONTACTO</h4><ul><li><a href="mailto:ventas@datastorm.mx">📧 ventas@datastorm.mx</a></li><li><a href="tel:+523301234">📞 312 · 5673 · 7600</a></li><li><a href="#">📍 Villa de Álvarez, Colima</a></li><li><a href="#">Solo envíos dentro de México 🇲🇽</a></li></ul></div>
+  </div>
+  <div class="footer-bar">© 2026 DataStorm — Jorge Morales Chávez · Gibran Mesina Mejía</div>
+</footer>
+<div id="toast"></div>
+<div class="auth-modal-overlay" id="auth-modal">
+  <div class="auth-modal-box">
+    <button class="auth-modal-close" onclick="cerrarModal()">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="auth-tab" id="tab-registro" onclick="switchTab('registro')">Crear cuenta</button>
+      <div class="auth-tab-bar" id="tab-bar"></div>
+    </div>
+    <div id="panel-login">
+      <div class="form-group"><label>CORREO ELECTRÓNICO</label><input type="email" id="l-correo" placeholder="tu@correo.com" onkeypress="if(event.key==='Enter')loginSubmit()"></div>
+      <div class="form-group"><label>CONTRASEÑA</label><input type="password" id="l-pass" placeholder="••••••••" onkeypress="if(event.key==='Enter')loginSubmit()"></div>
+      <button class="btn-submit" onclick="loginSubmit()">Iniciar sesión</button>
+      <p class="auth-switch">¿No tienes cuenta? <a onclick="switchTab('registro')">Regístrate</a></p>
+    </div>
+    <div id="panel-registro" style="display:none">
+      <div class="form-group"><label>NOMBRE COMPLETO</label><input type="text" id="r-nombre" placeholder="Jorge Morales Chávez"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+        <div class="form-group"><label>TELÉFONO</label><input type="tel" id="r-tel" placeholder="33-1234-5678"></div>
+        <div class="form-group"><label>CORREO</label><input type="email" id="r-correo" placeholder="tu@correo.com"></div>
+      </div>
+      <div class="form-group"><label>DOMICILIO</label><input type="text" id="r-dom" placeholder="Calle, número, ciudad"></div>
+      <div class="form-group"><label>CONTRASEÑA</label><input type="password" id="r-pass" placeholder="Mínimo 6 caracteres"></div>
+      <button class="btn-submit" onclick="registroSubmit()">Crear mi cuenta</button>
+      <p class="auth-switch">¿Ya tienes cuenta? <a onclick="switchTab('login')">Inicia sesión</a></p>
+    </div>
+  </div>
+</div>
+<script src="assets/js/productos.js"></script>
+<script src="assets/js/carrito.js"></script>
+<script src="assets/js/funciones.js"></script>
+<script src="assets/js/busqueda.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+const grid_pcs = document.getElementById('grid-pcs');
+const grid_comp = document.getElementById('grid-componentes');
+const grid_perf = document.getElementById('grid-perifericos');
+ 
+if(grid_pcs) grid_pcs.innerHTML = PRODUCTOS.filter(p => p.cat === 'pc').map(p => `
+  <div class="product-card" onclick="location.href='pages/producto.html?id=${p.id}'">
+    <div class="product-img"><img src="${getImagePath(p.image)}" alt="${p.nombre}" style="width:100%; height:100%; object-fit:contain; padding:1rem;" onerror="this.style.display='none'">${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}</div>
+    <div class="product-body"><div class="product-cat">${p.cat.toUpperCase()}</div><div class="product-name">${p.nombre}</div><div class="product-specs">${p.specs}</div>
+    <div class="product-footer"><div class="product-price"><small>MXN</small>$${p.precio.toLocaleString('es-MX')}</div><button class="btn-add-card" onclick="event.stopPropagation(); agregarCarrito(${p.id})">+ Agregar</button></div></div>
+  </div>
+`).join('');
+ 
+if(grid_comp) grid_comp.innerHTML = PRODUCTOS.filter(p => p.cat === 'componentes').map(p => `
+  <div class="product-card" onclick="location.href='pages/producto.html?id=${p.id}'">
+    <div class="product-img"><img src="${getImagePath(p.image)}" alt="${p.nombre}" style="width:100%; height:100%; object-fit:contain; padding:1rem;" onerror="this.style.display='none'">${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}</div>
+    <div class="product-body"><div class="product-cat">${p.cat.toUpperCase()}</div><div class="product-name">${p.nombre}</div><div class="product-specs">${p.specs}</div>
+    <div class="product-footer"><div class="product-price"><small>MXN</small>$${p.precio.toLocaleString('es-MX')}</div><button class="btn-add-card" onclick="event.stopPropagation(); agregarCarrito(${p.id})">+ Agregar</button></div></div>
+  </div>
+`).join('');
+ 
+if(grid_perf) grid_perf.innerHTML = PRODUCTOS.filter(p => p.cat === 'perifericos').map(p => `
+  <div class="product-card" onclick="location.href='pages/producto.html?id=${p.id}'">
+    <div class="product-img"><img src="${getImagePath(p.image)}" alt="${p.nombre}" style="width:100%; height:100%; object-fit:contain; padding:1rem;" onerror="this.style.display='none'">${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}</div>
+    <div class="product-body"><div class="product-cat">${p.cat.toUpperCase()}</div><div class="product-name">${p.nombre}</div><div class="product-specs">${p.specs}</div>
+    <div class="product-footer"><div class="product-price"><small>MXN</small>$${p.precio.toLocaleString('es-MX')}</div><button class="btn-add-card" onclick="event.stopPropagation(); agregarCarrito(${p.id})">+ Agregar</button></div></div>
+  </div>
+`).join('');
+ 
+setupScrollReveal();
+</script>
+</body>
+</html>
+ 
