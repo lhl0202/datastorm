@@ -439,7 +439,7 @@
         <span class="total-value" id="total">$0</span>
       </div>
 
-      <button class="checkout-btn" onclick="location.href='checkout.html'">Proceder al pago</button>
+      <button class="checkout-btn" onclick="irAPago()">Proceder al pago</button>
       <button class="continue-shopping" onclick="location.href='catalogo.html'">Seguir comprando</button>
 
       <div style="font-size:.75rem; color:var(--text-dim); margin-top:1.5rem; text-align:center; padding-top:1.5rem; border-top: 1px solid var(--border)">
@@ -572,17 +572,24 @@ function actualizarResumen(){
 }
 
 function aplicarCodigo(){
-  const codigo = document.getElementById('promo-code').value.toUpperCase();
+  const codigo = document.getElementById('promo-code').value.trim().toUpperCase();
+  if(!codigo){
+    toast('⚠️ Ingresa un código de descuento');
+    return;
+  }
   if(codigo === 'DATASTORM10'){
     descuentoAplicado = 500;
     toast('✅ Código aplicado: descuento de $500');
+    sessionStorage.setItem('ds_descuento', descuentoAplicado);
+    actualizarResumen();
   } else if(codigo === 'WELCOME20'){
     descuentoAplicado = 1000;
     toast('✅ Código aplicado: descuento de $1,000');
-  } else if(codigo){
+    sessionStorage.setItem('ds_descuento', descuentoAplicado);
+    actualizarResumen();
+  } else {
     toast('❌ Código no válido');
   }
-  actualizarResumen();
 }
 
 function irAPago(){
@@ -590,13 +597,7 @@ function irAPago(){
     toast('⚠️ Tu carrito está vacío');
     return;
   }
-  const usuario = getUser();
-  if(!usuario){
-    toast('⚠️ Inicia sesión para continuar');
-    setTimeout(() => abrirModal('login'), 600);
-    return;
-  }
-  location.href = 'pago.html';
+  location.href = 'checkout.html';
 }
 
 renderCarrito();

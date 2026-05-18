@@ -463,32 +463,32 @@
       <!-- MÉTODO DE PAGO -->
       <div class="form-section">
         <div class="form-section-title">💳 Método de Pago</div>
-        
+
         <div class="payment-methods">
           <div class="payment-method">
-            <input type="radio" id="pago-tarjeta" name="metodo-pago" value="tarjeta" checked>
+            <input type="radio" id="pago-tarjeta" name="metodo-pago" value="tarjeta" checked onchange="cambiarMetodoPago('tarjeta')">
             <label for="pago-tarjeta">💳 Tarjeta de Crédito</label>
           </div>
           <div class="payment-method">
-            <input type="radio" id="pago-paypal" name="metodo-pago" value="paypal">
+            <input type="radio" id="pago-paypal" name="metodo-pago" value="paypal" onchange="cambiarMetodoPago('paypal')">
             <label for="pago-paypal">🅿️ PayPal</label>
           </div>
           <div class="payment-method">
-            <input type="radio" id="pago-transferencia" name="metodo-pago" value="transferencia">
+            <input type="radio" id="pago-transferencia" name="metodo-pago" value="transferencia" onchange="cambiarMetodoPago('transferencia')">
             <label for="pago-transferencia">🏦 Transferencia</label>
           </div>
           <div class="payment-method">
-            <input type="radio" id="pago-oxxo" name="metodo-pago" value="oxxo">
+            <input type="radio" id="pago-oxxo" name="metodo-pago" value="oxxo" onchange="cambiarMetodoPago('oxxo')">
             <label for="pago-oxxo">🏪 OXXO Pay</label>
           </div>
         </div>
 
         <!-- Tarjeta de Crédito -->
-        <div id="tarjeta-info" style="display:block;">
+        <div id="metodo-tarjeta" class="metodo-pago-info" style="display:block;">
           <div class="form-row full">
             <div class="form-group">
               <label>NÚMERO DE TARJETA</label>
-              <input type="text" id="num-tarjeta" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatearTarjeta(this); detectarBanco()">
+              <input type="text" id="num-tarjeta" placeholder="0000 0000 0000 0000" maxlength="19" oninput="formatearTarjeta(this); detectarBanco()" required>
               <div id="bank-detector" class="bank-indicator" style="display:none;">
                 <div class="bank-logo">💳</div>
                 <div class="bank-name" id="bank-name">Detectando banco...</div>
@@ -499,19 +499,90 @@
           <div class="form-row">
             <div class="form-group">
               <label>FECHA DE VENCIMIENTO</label>
-              <input type="text" id="fecha-vencimiento" placeholder="MM/YY" maxlength="5" oninput="formatearFecha(this)">
+              <input type="text" id="fecha-vencimiento" placeholder="MM/YY" maxlength="5" oninput="formatearFecha(this)" required>
             </div>
             <div class="form-group">
               <label>CVV</label>
-              <input type="text" id="cvv" placeholder="123" maxlength="4">
+              <input type="text" id="cvv" placeholder="123" maxlength="4" required>
             </div>
           </div>
 
           <div class="form-row full">
             <div class="form-group">
               <label>NOMBRE EN LA TARJETA</label>
-              <input type="text" id="nombre-tarjeta" placeholder="Como aparece en la tarjeta">
+              <input type="text" id="nombre-tarjeta" placeholder="Como aparece en la tarjeta" required>
             </div>
+          </div>
+        </div>
+
+        <!-- PayPal -->
+        <div id="metodo-paypal" class="metodo-pago-info" style="display:none;">
+          <div class="form-row full">
+            <div class="form-group">
+              <label>CORREO PAYPAL</label>
+              <input type="email" id="correo-paypal" placeholder="tu@correo.com" required>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>CONTRASEÑA PAYPAL</label>
+              <input type="password" id="password-paypal" placeholder="Tu contraseña" required>
+            </div>
+          </div>
+          <p style="font-size:.85rem; color:var(--text-dim); margin-top:1rem;">
+            🔒 Serás redirigido a PayPal para completar el pago de forma segura.
+          </p>
+        </div>
+
+        <!-- Transferencia Bancaria -->
+        <div id="metodo-transferencia" class="metodo-pago-info" style="display:none;">
+          <div style="background:rgba(0,180,255,.1); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin-bottom:1.5rem;">
+            <p style="color:var(--text-dim); font-size:.9rem; margin-bottom:1rem;">
+              <strong style="color:var(--text);">Datos para transferencia bancaria:</strong>
+            </p>
+            <div style="display:grid; gap:.8rem; font-size:.9rem;">
+              <div>
+                <span style="color:var(--text-dim);">Banco:</span>
+                <span style="color:var(--text); font-weight:600;">BBVA México</span>
+              </div>
+              <div>
+                <span style="color:var(--text-dim);">Titular:</span>
+                <span style="color:var(--text); font-weight:600;">DataStorm S.A. de C.V.</span>
+              </div>
+              <div>
+                <span style="color:var(--text-dim);">Cuenta:</span>
+                <span style="color:var(--neon); font-weight:700; font-family:monospace;">0121584923476</span>
+              </div>
+              <div>
+                <span style="color:var(--text-dim);">RFC:</span>
+                <span style="color:var(--text); font-weight:600;">DST210101ABC</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="form-group">
+              <label>REFERENCIA DE PAGO</label>
+              <input type="text" id="ref-transferencia" placeholder="Referencia (orden o número de cliente)" required>
+            </div>
+          </div>
+        </div>
+
+        <!-- OXXO Pay -->
+        <div id="metodo-oxxo" class="metodo-pago-info" style="display:none;">
+          <div style="background:rgba(0,180,255,.1); border:1px solid var(--border); border-radius:8px; padding:1.5rem; margin-bottom:1.5rem; text-align:center;">
+            <p style="color:var(--text-dim); font-size:.9rem; margin-bottom:1rem;">
+              Código de barras para pagar en OXXO:
+            </p>
+            <div style="background:#fff; padding:1rem; border-radius:6px; margin-bottom:1rem;">
+              <svg id="barcode-oxxo" width="200" height="60" style="display:block; margin:0 auto;"></svg>
+            </div>
+            <p style="color:var(--text); font-weight:700; font-family:monospace; font-size:1rem;" id="codigo-oxxo">
+              Código: PENDIENTE
+            </p>
+            <p style="color:var(--text-dim); font-size:.8rem; margin-top:1rem;">
+              💡 El código se generará al confirmar tu compra.<br>
+              Lleva este código a cualquier OXXO para realizar el pago.
+            </p>
           </div>
         </div>
       </div>
@@ -543,6 +614,11 @@
       <div class="summary-line">
         <span>Envío:</span>
         <span>$<span id="envio">100</span></span>
+      </div>
+
+      <div class="summary-line" id="discount-row" style="display:none">
+        <span>Descuento:</span>
+        <span style="color:var(--neon);">-$<span id="discount">0</span></span>
       </div>
 
       <div class="summary-line total">
@@ -678,14 +754,15 @@ function detectarBanco() {
 // Inicializar resumen
 function inicializarResumen() {
   const carrito = JSON.parse(sessionStorage.getItem('ds_cart')) || [];
+  const descuento = parseInt(sessionStorage.getItem('ds_descuento')) || 0;
   const resumenDiv = document.getElementById('resumen-items');
-  
+
   let subtotal = 0;
   resumenDiv.innerHTML = carrito.map(item => {
     const producto = getProducto(item.id);
     const total = producto.precio * item.qty;
     subtotal += total;
-    
+
     const imageSrc = getImagePath(producto.image);
     return `
       <div class="summary-item">
@@ -701,13 +778,17 @@ function inicializarResumen() {
     `;
   }).join('');
 
-  const iva = Math.round(subtotal * 0.16);
   const envio = 150;
-  const total = subtotal + iva + envio;
+  const total = subtotal + envio - descuento;
 
   document.getElementById('subtotal').textContent = subtotal.toLocaleString('es-MX');
-  document.getElementById('iva').textContent = iva.toLocaleString('es-MX');
+  document.getElementById('envio').textContent = envio.toLocaleString('es-MX');
   document.getElementById('total').textContent = total.toLocaleString('es-MX');
+
+  if(descuento > 0) {
+    document.getElementById('discount-row').style.display = 'flex';
+    document.getElementById('discount').textContent = descuento.toLocaleString('es-MX');
+  }
 
   if(carrito.length === 0) {
     resumenDiv.innerHTML = '<p style="text-align:center; color:var(--text-dim);">Tu carrito está vacío</p>';
@@ -728,6 +809,12 @@ function formatearFecha(input) {
     valor = valor.slice(0, 2) + '/' + valor.slice(2, 4);
   }
   input.value = valor;
+}
+
+// Cambiar método de pago
+function cambiarMetodoPago(metodo) {
+  document.querySelectorAll('.metodo-pago-info').forEach(el => el.style.display = 'none');
+  document.getElementById('metodo-' + metodo).style.display = 'block';
 }
 
 // Validar campos
@@ -764,7 +851,7 @@ function validarFormulario() {
   }
 
   const metodoPago = document.querySelector('input[name="metodo-pago"]:checked').value;
-  
+
   if(metodoPago === 'tarjeta') {
     const numTarjeta = document.getElementById('num-tarjeta').value.replace(/\s/g, '');
     const fecha = document.getElementById('fecha-vencimiento').value;
@@ -788,6 +875,26 @@ function validarFormulario() {
 
     if(!nombreTarjeta || nombreTarjeta.length < 3) {
       mostrarMensaje('❌ Nombre en la tarjeta inválido', 'error');
+      return false;
+    }
+  } else if(metodoPago === 'paypal') {
+    const correoPP = document.getElementById('correo-paypal').value.trim();
+    const passPP = document.getElementById('password-paypal').value;
+
+    if(!correoPP || !correoPP.includes('@')) {
+      mostrarMensaje('❌ Correo PayPal inválido', 'error');
+      return false;
+    }
+
+    if(!passPP || passPP.length < 1) {
+      mostrarMensaje('❌ Ingresa tu contraseña de PayPal', 'error');
+      return false;
+    }
+  } else if(metodoPago === 'transferencia') {
+    const refTransf = document.getElementById('ref-transferencia').value.trim();
+
+    if(!refTransf || refTransf.length < 3) {
+      mostrarMensaje('❌ Ingresa una referencia de pago', 'error');
       return false;
     }
   }
@@ -822,11 +929,21 @@ function procesarCompra() {
     const nombre = document.getElementById('nombre').value;
     const correo = document.getElementById('correo').value;
     const pedidoId = 'DS-' + Date.now();
+    const metodoPago = document.querySelector('input[name="metodo-pago"]:checked').value;
 
-    mostrarMensaje(`✅ ¡Compra realizada! Número de pedido: ${pedidoId}. Se enviará confirmación a ${correo}`, 'success');
-    
+    let mensaje = `✅ ¡Compra realizada! Número de pedido: ${pedidoId}. Se enviará confirmación a ${correo}`;
+
+    if(metodoPago === 'oxxo') {
+      const codigoOXXO = generarCodigoOXXO(pedidoId);
+      document.getElementById('codigo-oxxo').textContent = `Código: ${codigoOXXO}`;
+      mensaje = `✅ ¡Compra realizada! Código OXXO: ${codigoOXXO}. Lleva este código a cualquier OXXO.`;
+    }
+
+    mostrarMensaje(mensaje, 'success');
+
     // Limpiar carrito
     sessionStorage.removeItem('ds_cart');
+    sessionStorage.removeItem('ds_descuento');
     document.getElementById('cart-count').textContent = '0';
 
     btn.disabled = false;
@@ -836,6 +953,20 @@ function procesarCompra() {
       location.href = 'catalogo.html';
     }, 3000);
   }, 2000);
+}
+
+function generarCodigoOXXO(pedidoId) {
+  const numPedido = pedidoId.replace('DS-', '');
+  const prefijo = '5' + Math.random().toString().slice(2, 5);
+  const codigo = prefijo + numPedido.slice(-8);
+  return codigo.slice(0, 13);
+}
+
+// Validar carrito no vacío
+const carritoValida = JSON.parse(sessionStorage.getItem('ds_cart')) || [];
+if(carritoValida.length === 0) {
+  alert('⚠️ Tu carrito está vacío');
+  location.href = 'catalogo.html';
 }
 
 // Inicializar
