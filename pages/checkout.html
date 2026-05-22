@@ -681,6 +681,7 @@
 <script src="../assets/js/busqueda.js"></script>
 <script src="../assets/js/auth.js"></script>
 <script src="../assets/js/funciones.js"></script>
+<script src="../assets/js/pedidos.js"></script>
 
 <script>
 // Detectar banco por BIN (primeros dígitos de la tarjeta)
@@ -912,6 +913,14 @@ function mostrarMensaje(msg, tipo) {
 
 // Procesar compra
 function procesarCompra() {
+  // 1. VALIDAR AUTENTICACIÓN
+  const usuario = getUser();
+  if(!usuario) {
+    mostrarMensaje('🔐 Debes iniciar sesión o crear cuenta para continuar', 'error');
+    setTimeout(() => abrirModal('login'), 500);
+    return;
+  }
+
   if(!validarFormulario()) return;
 
   const carrito = JSON.parse(sessionStorage.getItem('ds_cart')) || [];
@@ -928,8 +937,23 @@ function procesarCompra() {
   setTimeout(() => {
     const nombre = document.getElementById('nombre').value;
     const correo = document.getElementById('correo').value;
+    const telefono = document.getElementById('telefono').value;
+    const domicilio = document.getElementById('domicilio').value;
     const pedidoId = 'DS-' + Date.now();
     const metodoPago = document.querySelector('input[name="metodo-pago"]:checked').value;
+    const total = parseFloat(document.getElementById('total-final').textContent.replace('$', '').replace(',', ''));
+
+    // 2. GUARDAR EN SQL
+    guardarPedidoSQL({
+      id_pedido: pedidoId,
+      usuario: usuario.nombre,
+      correo: correo,
+      telefono: telefono,
+      domicilio: domicilio,
+      total: total,
+      metodo_pago: metodoPago,
+      carrito: carrito
+    });
 
     let mensaje = `✅ ¡Compra realizada! Número de pedido: ${pedidoId}. Se enviará confirmación a ${correo}`;
 

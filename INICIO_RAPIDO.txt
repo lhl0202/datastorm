@@ -1,0 +1,213 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                    🚀 INICIO RÁPIDO                          ║
+║      Autenticación en Compra + MySQL DataStorm              ║
+╚═══════════════════════════════════════════════════════════════╝
+
+⏱️  3 PASOS PARA PONER EN FUNCIONAMIENTO
+══════════════════════════════════════════════════════════════
+
+PASO 1️⃣  CREAR BASE DE DATOS (5 segundos)
+──────────────────────────────────────────
+Abre terminal y ejecuta:
+
+   mysql -u root < sql/datastorm_mysql.sql
+
+O en phpMyAdmin:
+   1. Nueva SQL query
+   2. Copia contenido de: sql/datastorm_mysql.sql
+   3. Ejecuta
+   
+✅ Hecho
+
+
+PASO 2️⃣  CONFIGURAR CREDENCIALES MYSQL (2 minutos)
+──────────────────────────────────────────────────
+Edita 2 archivos:
+
+📝 api/guardar-pedido.php (línea 22-26):
+   define('DB_HOST', 'localhost');
+   define('DB_USER', 'root');        ← TU USUARIO
+   define('DB_PASS', '');            ← TU CONTRASEÑA
+   define('DB_NAME', 'datastorm');
+   define('DB_PORT', 3306);
+
+📝 api/estado.php (línea 8-12):
+   define('DB_HOST', 'localhost');
+   define('DB_USER', 'root');        ← TU USUARIO
+   define('DB_PASS', '');            ← TU CONTRASEÑA
+   define('DB_NAME', 'datastorm');
+   define('DB_PORT', 3306);
+
+✅ Hecho
+
+
+PASO 3️⃣  COLOCA EN SERVIDOR WEB (1 minuto)
+──────────────────────────────────────────
+Copia la carpeta datastorm a:
+
+   Windows + XAMPP:
+   C:\xampp\htdocs\datastorm
+
+   Windows + WAMP:
+   C:\wamp64\www\datastorm
+
+   Linux:
+   /var/www/html/datastorm
+
+Accede a: http://localhost/datastorm
+
+✅ Listo
+
+
+🎯 CÓMO FUNCIONA
+════════════════════════════════════════════════════════════════
+
+1. Usuario agrega productos al carrito
+   ↓
+2. Hace clic en "Pagar"
+   ↓
+3. Sistema verifica: ¿Usuario autenticado?
+   
+   SI NO → 🔐 "Debes iniciar sesión"
+           → Abre modal login
+           → Cancela compra
+   
+   SI SÍ → ✓ Continúa
+          → Valida formulario
+          → Guarda en MySQL
+          → Muestra confirmación
+
+
+📊 DATOS QUE SE GUARDAN
+════════════════════════════════════════════════════════════════
+
+Tabla "usuarios":
+  • ID usuario
+  • Nombre
+  • Email (único)
+  • Contraseña (hasheada)
+  • Teléfono
+  • Domicilio
+
+Tabla "pedidos":
+  • ID pedido (DS-XXXXXX)
+  • Usuario
+  • Fecha
+  • Total
+  • Método de pago
+  • Estado (pendiente/confirmado/enviado/entregado)
+
+Tabla "detalle_pedido":
+  • Para cada producto:
+    - ID producto
+    - Cantidad
+    - Precio unitario
+    - Subtotal (calculado)
+
+
+✨ CARACTERÍSTICAS
+════════════════════════════════════════════════════════════════
+
+✅ Validación de autenticación en compra
+✅ Guardado automático en MySQL
+✅ Soporte para 4 métodos de pago
+✅ Historial de pedidos
+✅ Carrito temporal en BD
+✅ Seguimiento de envíos
+✅ Modo offline (respaldo local)
+
+
+🧪 VERIFICAR QUE FUNCIONA
+════════════════════════════════════════════════════════════════
+
+Test 1: Conexión a MySQL
+   curl http://localhost/datastorm/api/estado.php
+   
+   Debe retornar:
+   {"success":true,"estado":"conectado","base_datos":"datastorm"}
+
+Test 2: Intentar compra sin autenticación
+   1. Abre http://localhost/datastorm
+   2. Agrega un producto
+   3. Carrito → Proceder al pago
+   4. Click en "Confirmar Compra"
+   5. Debe aparecer: 🔐 "Debes iniciar sesión"
+
+Test 3: Compra autenticada
+   1. Crea cuenta o inicia sesión
+   2. Agrega productos
+   3. Compra
+   4. Debe guardar en MySQL
+
+Test 4: Ver pedidos
+   mysql -u root -D datastorm -e "SELECT * FROM pedidos;"
+
+
+📁 ARCHIVOS IMPORTANTES
+════════════════════════════════════════════════════════════════
+
+PARA ENTENDER EL FLUJO:
+├─ pages/checkout.html          (Dónde se valida auth)
+├─ assets/js/pedidos.js          (Cómo se guarda)
+└─ api/guardar-pedido.php        (Lógica en servidor)
+
+PARA CONFIGURAR:
+├─ api/guardar-pedido.php        (Credenciales MySQL)
+├─ api/estado.php                (Credenciales MySQL)
+└─ sql/datastorm_mysql.sql       (Crear BD)
+
+PARA DOCUMENTACIÓN:
+├─ RESUMEN_IMPLEMENTACION.txt    (Detalles completos)
+├─ SETUP_MYSQL.md                (Instalación paso a paso)
+└─ README_AUTENTICACION_COMPRA.md (Documentación técnica)
+
+
+⚠️  POSIBLES ERRORES
+════════════════════════════════════════════════════════════════
+
+Error: "No hay conexión a MySQL"
+→ MySQL no está corriendo
+→ Verifica credenciales en api/*.php
+
+Error: "Debes iniciar sesión" incluso autenticado
+→ Abre DevTools (F12) → Consola
+→ Escribe: getUser()
+→ Debe retornar un objeto con datos del usuario
+
+Error: Pedido no se guarda
+→ Abre DevTools (F12) → Network
+→ Busca "guardar-pedido.php"
+→ Revisa qué retorna
+→ Verifica que campo está faltando
+
+
+💡 TIPS
+═══════════════════════════════════════════════════════════════
+
+• Usa XAMPP/WAMP/LAMP para facilitar instalación
+• En phpMyAdmin puedes ver y editar los datos
+• Los pedidos se guardan en sessionStorage si hay error
+• Las contraseñas se hashean automáticamente
+• El sistema maneja nuevos usuarios automáticamente
+
+
+🆘 SOPORTE
+═══════════════════════════════════════════════════════════════
+
+Revisa:
+1. RESUMEN_IMPLEMENTACION.txt (sección Troubleshooting)
+2. SETUP_MYSQL.md (preguntas frecuentes)
+3. README_AUTENTICACION_COMPRA.md (ejemplos detallados)
+
+
+═══════════════════════════════════════════════════════════════
+
+¡LISTO PARA USAR! ✨
+
+Ejecuta los 3 pasos anteriores y tendrás:
+- ✅ Sistema de autenticación en compra
+- ✅ Conexión a MySQL
+- ✅ Guardado de pedidos
+- ✅ Historial de clientes
+
+═══════════════════════════════════════════════════════════════
